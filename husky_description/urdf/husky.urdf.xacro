@@ -36,6 +36,13 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
   <xacro:arg name="robot_namespace" default="/" />
   <xacro:arg name="urdf_extras" default="empty.urdf" />
 
+  <xacro:arg name="sensor_arch_enabled" default="true"/>
+  <xacro:arg name="sensor_arch_size" default="510"/>  <!-- 300, 510 -->
+
+  <xacro:arg name="velodyne_enabled" default="true"/>
+  <xacro:arg name="velodyne_model" default="vlp16"/>  <!-- vlp16, hdl32e -->
+  <xacro:arg name="velodyne_parent_link_name" default="sensor_arch_mount_link"/>
+
   <!-- Included URDF/XACRO Files -->
   <xacro:include filename="$(find husky_description)/urdf/decorations.urdf.xacro" />
   <xacro:include filename="$(find husky_description)/urdf/wheel.urdf.xacro" />
@@ -43,6 +50,9 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
   <xacro:include filename="$(find husky_description)/urdf/accessories/kinect_camera.urdf.xacro"/>
   <xacro:include filename="$(find husky_description)/urdf/accessories/sick_lms1xx_mount.urdf.xacro"/>
   <xacro:include filename="$(find husky_description)/urdf/accessories/sensor_arch.urdf.xacro"/>
+  <xacro:include filename="$(find velodyne_description)/urdf/VLP-16.urdf.xacro"/>
+  <xacro:include filename="$(find velodyne_description)/urdf/HDL-32E.urdf.xacro"/>
+  <xacro:include filename="$(find ur_description)/urdf/ur5.urdf.xacro"/>
 
   <xacro:property name="M_PI" value="3.14159"/>
 
@@ -147,11 +157,25 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 
   </xacro:if>
 
+  <xacro:if value="$(arg sensor_arch_enabled)">
+    <xacro:property name="xacro_sensor_arch_size" value="$(arg sensor_arch_size)"/>
+    <xacro:sensor_arch prefix="" parent="top_plate_link" size="$(arg sensor_arch_size)">
+      <xacro:if value="${xacro_sensor_arch_size == 300}">
+	<origin xyz="-0.35 0 0.3" rpy="0 0 -3.14"/>
+      </xacro:if>
+      <xacro:if value="${xacro_sensor_arch_size != 300}">
+	<origin xyz="-0.35 0 0.51" rpy="0 0 -3.14"/>
+      </xacro:if>
+    </xacro:sensor_arch>
+  </xacro:if>
+
   <xacro:if value="$(arg kinect_enabled)">
 
+    <!--
     <xacro:sensor_arch prefix="" parent="top_plate_link">
-      <origin xyz="-0.35 0 0.51" rpy="0 0 -3.14"/>
-    </xacro:sensor_arch>
+      <origin xyz="-0.35 0 0.51" rpy="0 0 -3.14"/>      
+      </xacro:sensor_arch>
+      -->
     <joint name="kinect_frame_joint" type="fixed">
       <origin xyz="$(arg kinect_xyz)" rpy="$(arg kinect_rpy)" />
       <parent link="sensor_arch_mount_link"/>
@@ -159,7 +183,7 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
     </joint>
 
     <xacro:kinect_camera prefix="camera" robot_namespace="$(arg robot_namespace)"/>
-  </xacro:if>
+  </xacro:if>  
 
   <gazebo>
     <plugin name="gazebo_ros_control" filename="libgazebo_ros_control.so">
@@ -200,5 +224,5 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
 
   <!-- Optional custom includes. -->
   <xacro:include filename="$(arg urdf_extras)" />
-
+  
 </robot>
