@@ -55,4 +55,9 @@ ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCL
     <param name="global_costmap/height" value="100.0" if="$(arg no_static_map)"/>
   </node>
 
+  <group unless="$(arg no_static_map)">
+     <node pkg="map_server" type="map_server" name="map_server" args="$(find husky_navigation)/maps/playpen_map.yaml"/>
+     <node type="static_transform_publisher" pkg="tf" name="map_odom_transform" args="0 0 0.13 0 0 0 /map /odom 100"/>
+  </group>
+
 </launch>
