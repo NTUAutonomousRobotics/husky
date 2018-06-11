@@ -66,3 +66,11 @@ sudo apt-get install  ros-kinetic-universal-robot
 
 
 For Husky instructions and tutorials, please see http://wiki.ros.org/Robots/Husky
+
+===========
+Modified on 11th June by Luke wen.
+To test the the husky navigation capability in the loaded static map (playpen map):
+
+Step 1: roslaunch husky_gazebo husky_empty_world.launch
+Step 2: roslaunch husky_vim view_robot.launch
+Step 3: roslaunch husky_navigation move_base.launch 
